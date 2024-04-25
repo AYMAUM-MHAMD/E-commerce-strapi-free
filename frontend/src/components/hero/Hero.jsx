@@ -18,11 +18,11 @@ import IconSection from "./IconSection";
 const Slider = [
   {
     text: "MEN",
-    link: "src/components/hero/images/banner-15.jpg",
+    link: "./images/banner-15.jpg",
   },
   {
     text: "WOMEN",
-    link: "src/components/hero/images/banner-25.jpg",
+    link: "./images/banner-25.jpg",
   },
 ];
 const Hero = () => {
@@ -130,7 +130,7 @@ const Hero = () => {
           <Box sx={{ position: "relative" }}>
             <img
               width={"100%"}
-              src="src/components/hero/images/banner-17.jpg"
+              src="./images/banner-17.jpg"
               alt="banner-16.jpg"
             />
             <Stack
@@ -193,7 +193,7 @@ const Hero = () => {
           <Box sx={{ position: "relative" }}>
             <img
               width={"100%"}
-              src="src/components/hero/images/banner-16.jpg"
+              src="./images/banner-16.jpg"
               alt="banner-17.jpg"
             />
             <Stack

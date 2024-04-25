@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   Container,
   IconButton,
   Rating,
@@ -20,13 +21,16 @@ import Dialog from "@mui/material/Dialog";
 import { Close } from "@mui/icons-material";
 import ProductDetails from "./ProductDetails";
 import { useGetproductByNameQuery } from "../../Redux/pokemon";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Main = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
 
   const handleAlignment = (event, newValue) => {
-    setmyData(newValue)
+    if (newValue !== null) {
+      setmyData(newValue);
+    }
   };
 
   const handleClickOpen = () => {
@@ -43,21 +47,37 @@ const Main = () => {
   const womenCategoryAPI =
     "products?populate=*&filters[productCategory][$eq]=Women";
 
-    const [myData, setmyData] = useState(allProductsAPI)
+  const [myData, setmyData] = useState(allProductsAPI);
   const { data, error, isLoading } = useGetproductByNameQuery(myData);
+  const [clickedProduct, setclickedProduct] = useState({});
 
   if (error) {
-    <Typography variant="h6">
-      Error :{" "}
-      {
-        // @ts-ignore
-        error.message
-      }
-    </Typography>;
+    // @ts-ignore
+    return (
+      <Container
+        sx={{
+          py: 11,
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h6">
+          {
+            // @ts-ignore
+            error.error
+          }
+        </Typography>
+
+        <Typography variant="h6">Please try again later</Typography>
+      </Container>
+    );
   }
 
   if (isLoading) {
-    <Typography variant="h6">LOADING...............</Typography>;
+    return (
+      <Box sx={{ py: 11, textAlign: "center" }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (data) {
@@ -129,10 +149,16 @@ const Main = () => {
           flexWrap={"wrap"}
           justifyContent={"space-between"}
         >
-          {data.data.map((item) => {
+          <AnimatePresence>
+            {data.data.map((item) => {
             return (
               <Card
-                key={item}
+                component={motion.section}
+                layout
+                initial={{ transform: "scale(0)" }}
+                animate={{ transform: "scale(1)" }}
+                transition={{ duration: 1.6, type: "spring", stiffness: 50 }}
+                key={item.id}
                 sx={{
                   maxWidth: 333,
                   mt: 6,
@@ -146,9 +172,7 @@ const Main = () => {
                 <CardMedia
                   sx={{ height: 277 }}
                   // @ts-ignore
-                  image={`${
-                    item.attributes.productImg.data[0].attributes.url
-                  }`}
+                  image={`${item.attributes.productImg.data[0].attributes.url}`}
                   title="green iguana"
                 />
 
@@ -162,7 +186,7 @@ const Main = () => {
                       {item.attributes.productTitle}
                     </Typography>
                     <Typography variant="subtitle2" component={"p"}>
-                      {item.attributes.productPrice}
+                      ${item.attributes.productPrice}
                     </Typography>
                   </Stack>
 
@@ -173,7 +197,10 @@ const Main = () => {
 
                 <CardActions sx={{ justifyContent: "space-between" }}>
                   <Button
-                    onClick={handleClickOpen}
+                    onClick={() => {
+                      handleClickOpen();
+                      setclickedProduct(item);
+                    }}
                     sx={{ transform: "capitalize" }}
                     size="large"
                   >
@@ -193,6 +220,8 @@ const Main = () => {
               </Card>
             );
           })}
+          </AnimatePresence>
+          
         </Stack>
 
         <Dialog
@@ -214,7 +243,7 @@ const Main = () => {
             <Close />
           </IconButton>
 
-          <ProductDetails />
+          <ProductDetails clickedProduct={clickedProduct} />
         </Dialog>
       </Container>
     );

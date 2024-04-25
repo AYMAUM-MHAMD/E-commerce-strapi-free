@@ -1,8 +1,27 @@
-/* eslint-disable react/no-unescaped-entities */
-import { AddShoppingCartOutlined } from "@mui/icons-material";
-import { Box, Button, Stack, Typography } from "@mui/material";
+/* eslint-disable react/prop-types */
 
-const ProductDetails = () => {
+import { AddShoppingCartOutlined } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
+import { useState } from "react";
+
+const ProductDetails = ({ clickedProduct }) => {
+  const [selectedImg, setselectedImg] = useState(0);
+
+  const [alignment, setAlignment] = useState(0);
+
+  const handleAlignment = (event, newAlignment) => {
+    if (newAlignment !== null) {
+      setAlignment(newAlignment);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -13,16 +32,24 @@ const ProductDetails = () => {
       }}
     >
       <Box display={"flex"}>
-        <img width={300} src="src/components/hero/images/images.jpg" alt="" />
+        <img
+          width={360}
+          src={
+            clickedProduct.attributes.productImg.data[selectedImg].attributes
+              .url
+          }
+          alt=""
+        />
       </Box>
-      <Box sx={{ textAlign: { xs: " center", sm: "left" } }}>
-        <Typography variant="h5">WOMEN'S FASHION</Typography>
+      <Box sx={{ py: 2, textAlign: { xs: " center", sm: "left" } }}>
+        <Typography variant="h5">
+          {clickedProduct.attributes.productTitle}
+        </Typography>
         <Typography my={0.4} fontSize={"22px"} color={"crimson"} variant="h6">
-          $12.99
+          ${clickedProduct.attributes.productPrice}
         </Typography>
         <Typography variant="body1">
-          Lizards are a widespread group of squamate reptiles, with over 6,000
-          species, ranging across all continents except Antarctica
+          {clickedProduct.attributes.productDescription}
         </Typography>
 
         <Stack
@@ -31,23 +58,48 @@ const ProductDetails = () => {
           gap={1}
           my={2}
         >
-          {[
-            "src/components/hero/images/images.jpg",
-            "src/components/hero/images/final.png",
-          ].map((item) => {
-            return (
-              <img
-                style={{ borderRadius: 3 }}
-                height={100}
-                width={90}
-                key={item}
-                src={item}
-                alt=""
-              />
-            );
-          })}
+          <ToggleButtonGroup
+            value={alignment}
+            exclusive
+            onChange={handleAlignment}
+            sx={{
+              ".Mui-selected": {
+                border: "1px solid royalblue !important",
+                borderRadius: "5px !important",
+                opacity: "1",
+                backgroundColor: "initial",
+              },
+            }}
+          >
+            {clickedProduct.attributes.productImg.data.map((item, index) => {
+              return (
+                <ToggleButton
+                  sx={{
+                    width: "110px",
+                    height: "110px",
+                    mx: 1,
+                    p: "0",
+                    opacity: "0.5",
+                  }}
+                  key={item.id}
+                  value={index}
+                  aria-label="left aligned"
+                >
+                  <img
+                    onClick={() => {
+                      setselectedImg(index);
+                    }}
+                    style={{ borderRadius: 3 }}
+                    height={"100%"}
+                    width={"100%"}
+                    src={item.attributes.url}
+                    alt=""
+                  />
+                </ToggleButton>
+              );
+            })}
+          </ToggleButtonGroup>
         </Stack>
-
         <Button
           sx={{ mb: { xs: 1, sm: 0 }, textTransform: "capitalize" }}
           variant="contained"
